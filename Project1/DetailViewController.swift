@@ -10,14 +10,18 @@ import UIKit
 class DetailViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     var selectedImage: String?
+    var selectedIndex: Int?
+    var totalPictures: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = selectedImage
-
         if let imageToLoad = selectedImage, let image = UIImage(named: imageToLoad) {
             imageView.image = image
+        }
+        
+        if let index = selectedIndex, let total = totalPictures {
+            title = "Picture \(index + 1) of \(total)"
         }
     }
     
