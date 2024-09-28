@@ -16,6 +16,8 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Share Image", style: .plain, target: self, action: #selector(shareImage))
+        
         if let imageToLoad = selectedImage, let image = UIImage(named: imageToLoad) {
             imageView.image = image
         }
@@ -38,7 +40,19 @@ class DetailViewController: UIViewController {
             navController.hidesBarsOnTap = false
         }
     }
+    
+    @objc func shareImage() {
+        guard let image = imageView.image?.jpegData(compressionQuality: 0.8), let imageName = selectedImage else {
+            print("No image to share.")
+            return
+        }
 
+        let message = "Hey, you're trying to share \(imageName)!"
+        let vc = UIActivityViewController(activityItems: [message, image], applicationActivities: [])
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
+    
+    }
     /*
     // MARK: - Navigation
 

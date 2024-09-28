@@ -16,6 +16,8 @@ class ViewController: UITableViewController {
         title = "Storm Viewer"
         navigationController?.navigationBar.prefersLargeTitles = true
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Recommend", style: .plain, target: self, action: #selector(recommendApp))
+  
         let fm = FileManager.default
         let path = Bundle.main.resourcePath!
         let items = try! fm.contentsOfDirectory(atPath: path)
@@ -53,6 +55,11 @@ class ViewController: UITableViewController {
         }
     }
 
-
+    @objc func recommendApp() {
+        let message = "Hey, check out this app! It's super cool!"
+        let vc = UIActivityViewController(activityItems: [message], applicationActivities: [])
+        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
+        present(vc, animated: true)
+    }
 }
 
