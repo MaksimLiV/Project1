@@ -9,7 +9,7 @@ import UIKit
 
 class ViewController: UITableViewController {
     var pictures = [String]()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -17,25 +17,32 @@ class ViewController: UITableViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Recommend", style: .plain, target: self, action: #selector(recommendApp))
-  
-        let fm = FileManager.default
-        let path = Bundle.main.resourcePath!
-        let items = try! fm.contentsOfDirectory(atPath: path)
         
-        for item in items {
-            if item.hasPrefix("nssl") {
-                pictures.append(item)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let fm = FileManager.default
+            let path = Bundle.main.resourcePath!
+            let items = try! fm.contentsOfDirectory(atPath: path)
+            
+            var loadedPictures = [String]()
+            
+            // Filter out the items that start with "nssl"
+            for item in items {
+                if item.hasPrefix("nssl") {
+                    loadedPictures.append(item)
+                }
+            }
+            
+            
+            loadedPictures.sort()
+            
+            DispatchQueue.main.async {
+                self.pictures = loadedPictures
+                self.tableView.reloadData()
             }
         }
-        
-        pictures.sort()
-        
-        print(pictures)
-        
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         return pictures.count
     }
     
@@ -54,7 +61,7 @@ class ViewController: UITableViewController {
             navigationController?.pushViewController(vc, animated: true)
         }
     }
-
+    
     @objc func recommendApp() {
         let message = "Hey, check out this app! It's super cool!"
         let vc = UIActivityViewController(activityItems: [message], applicationActivities: [])
@@ -62,5 +69,3 @@ class ViewController: UITableViewController {
         present(vc, animated: true)
     }
 }
-
-//sdasdsdas
