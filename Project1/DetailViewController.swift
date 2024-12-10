@@ -8,13 +8,27 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-    @IBOutlet weak var imageView: UIImageView!
+    var imageView: UIImageView!
     var selectedImage: String?
     var selectedIndex: Int?
     var totalPictures: Int?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .black
+        
+        imageView = UIImageView(frame: view.bounds)
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(imageView)
+        
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Share Image", style: .plain, target: self, action: #selector(shareImage))
         
@@ -29,16 +43,12 @@ class DetailViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let navController = navigationController {
-            navController.hidesBarsOnTap = true
-        }
+        navigationController?.hidesBarsOnTap = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let navController = navigationController {
-            navController.hidesBarsOnTap = false
-        }
+        navigationController?.hidesBarsOnTap = false
     }
     
     @objc func shareImage() {
@@ -51,17 +61,5 @@ class DetailViewController: UIViewController {
         let vc = UIActivityViewController(activityItems: [message, image], applicationActivities: [])
         vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc, animated: true)
-    
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-     // p
-    }
-    */
-
 }
