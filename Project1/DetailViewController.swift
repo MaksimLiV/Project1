@@ -12,12 +12,27 @@ class DetailViewController: UIViewController {
     var selectedImage: String?
     var selectedIndex: Int?
     var totalPictures: Int?
+    var viewsCountCallback: ((String) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("DetailViewController viewDidLoad started")
         
-        view.backgroundColor = .black
+        view.backgroundColor = .white
+        setupImageView()
+        setupNavigationItem()
         
+        if let imageToLoad = selectedImage {
+            print("Loading image: \(imageToLoad)")
+            imageView.image = UIImage(named: imageToLoad)
+            viewsCountCallback?(imageToLoad)
+            print("Called viewsCountCallback for \(imageToLoad)")
+        }
+        
+        updateTitle()
+    }
+    
+    func setupImageView() {
         imageView = UIImageView(frame: view.bounds)
         imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -29,15 +44,21 @@ class DetailViewController: UIViewController {
             imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             imageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Share Image", style: .plain, target: self, action: #selector(shareImage))
-        
-        if let imageToLoad = selectedImage, let image = UIImage(named: imageToLoad) {
-            imageView.image = image
-        }
-        
+    }
+    
+    func setupNavigationItem() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Share Image",
+            style: .plain,
+            target: self,
+            action: #selector(shareImage)
+        )
+    }
+    
+    func updateTitle() {
         if let index = selectedIndex, let total = totalPictures {
             title = "Picture \(index + 1) of \(total)"
+            print("Updated title: \(title ?? "")")
         }
     }
     
@@ -52,12 +73,13 @@ class DetailViewController: UIViewController {
     }
     
     @objc func shareImage() {
-        guard let image = imageView.image?.jpegData(compressionQuality: 0.8), let imageName = selectedImage else {
-            print("No image to share.")
+        guard let image = imageView.image?.jpegData(compressionQuality: 0.8),
+              let imageName = selectedImage else {
+            print("Failed to prepare image for sharing")
             return
         }
-
-        let message = "Hey, you're trying to share \(imageName)!"
+        
+        let message = "Check out this storm image: \(imageName)!"
         let vc = UIActivityViewController(activityItems: [message, image], applicationActivities: [])
         vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc, animated: true)
